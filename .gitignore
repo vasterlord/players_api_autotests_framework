@@ -1,0 +1,101 @@
+HELP.md
+*.log
+/**/temp
+target/
+*/target/
+.allure/
+allure-report/
+.DS_Store
+allure-results/
+/allure-results
+/allure-results/
+*/allure-results/
+tokens
+out
+gen
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.csv
+*.csv(Downloaded)
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+# Default ignored files
+/shelf/
+/workspace.xml
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Zeppelin ignored files
+/ZeppelinRemoteNotebooks/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/bin/
+
+# helm build artifacts
+/**/*.tgz
+/**/Chart.lock
+/**/charts/
+
+### VS Code ###
+.vscode/
+
+### Scala ###
+.metals/
+.bloop/
+
+# Mongo Explorer plugin
+.idea/**/mongoSettings.xml
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Cursive Clojure plugin
+.idea/replstate.xml
+
+# SonarLint plugin
+.idea/sonarlint/
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+# Editor-based Rest Client
+.idea/httpRequests
+
+# Android studio 3.1+ serialized cache file
+.idea/caches/build_file_checksums.ser
+
+### Logs ###
+logs/
