@@ -1,16 +1,16 @@
-package com.api.tests;
+package com.api.tests.clients;
 
 import io.restassured.http.ContentType;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @Builder
-@RequiredArgsConstructor
-public final class BaseApiParameters {
+public final class BaseApiClientParameters {
 
     private final String baseUri;
+
+    private final String basePath;
 
     private final ContentType contentType;
 

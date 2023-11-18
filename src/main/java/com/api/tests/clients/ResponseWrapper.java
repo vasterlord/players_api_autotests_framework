@@ -1,4 +1,4 @@
-package com.api.tests;
+package com.api.tests.clients;
 
 import io.restassured.response.Response;
 import lombok.RequiredArgsConstructor;

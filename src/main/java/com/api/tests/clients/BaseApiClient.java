@@ -1,17 +1,20 @@
-package com.api.tests;
+package com.api.tests.clients;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.Allure;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.api.tests.reporting.AllureStepsLogging.addAllureStepTextAttachment;
 import static io.restassured.RestAssured.with;
+import static io.restassured.config.LogConfig.logConfig;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 import static io.restassured.config.RestAssuredConfig.config;
 
@@ -21,16 +24,19 @@ public class BaseApiClient {
 
     private final RequestSpecification baseRequestSpec;
 
-    protected BaseApiClient(BaseApiParameters baseApiParameters) {
-        config().objectMapperConfig(objectMapperConfig()
-                .jackson2ObjectMapperFactory((cls, charset) -> new ObjectMapper()));
-        baseRequestSpec = setupBaseRequestSpec(baseApiParameters);
+    protected BaseApiClient(LogDetail logDetail, BaseApiClientParameters baseApiClientParameters) {
+        config().logConfig(logConfig().enableLoggingOfRequestAndResponseIfValidationFails())
+                .objectMapperConfig(objectMapperConfig()
+                        .jackson2ObjectMapperFactory((cls, charset) -> new ObjectMapper()));
+        baseRequestSpec = setupBaseRequestSpec(logDetail, baseApiClientParameters);
     }
 
-    private RequestSpecification setupBaseRequestSpec(final BaseApiParameters baseApiParameters) {
-        return new RequestSpecBuilder().addFilters(List.of(new AllureRestAssured()))
-                .setBaseUri(baseApiParameters.getBaseUri())
-                .setContentType(baseApiParameters.getContentType())
+    private RequestSpecification setupBaseRequestSpec(final LogDetail logDetail,
+                                                      final BaseApiClientParameters baseApiClientParameters) {
+        return new RequestSpecBuilder().addFilters(List.of(new AllureRestAssured())).log(logDetail)
+                .setBaseUri(baseApiClientParameters.getBaseUri())
+                .setBasePath(baseApiClientParameters.getBasePath())
+                .setContentType(baseApiClientParameters.getContentType())
                 .build();
     }
 
@@ -40,11 +46,11 @@ public class BaseApiClient {
      *
      * @return {@link RequestSpecification} get copy of base request spec.
      */
-    public RequestSpecification getBaseRequestSpec() {
+    protected RequestSpecification getBaseRequestSpec() {
         return new RequestSpecBuilder().addRequestSpecification(baseRequestSpec).build();
     }
 
-    public <F> ResponseWrapper<F> get(
+    protected <F> ResponseWrapper<F> get(
             final RequestSpecification configuredSpec,
             final String path,
             final Class<F> responseClass
@@ -56,7 +62,7 @@ public class BaseApiClient {
         return new ResponseWrapper<>(response, responseClass);
     }
 
-    public <F> ResponseWrapper<F> post(
+    protected <F> ResponseWrapper<F> post(
             final RequestSpecification configuredSpec,
             final String path,
             final Class<F> responseClass
@@ -68,7 +74,7 @@ public class BaseApiClient {
         return new ResponseWrapper<>(response, responseClass);
     }
 
-    public <F> ResponseWrapper<F> put(
+    protected <F> ResponseWrapper<F> put(
             final RequestSpecification configuredSpec,
             final String path,
             final Class<F> responseClass
@@ -80,7 +86,19 @@ public class BaseApiClient {
         return new ResponseWrapper<>(response, responseClass);
     }
 
-    public <F> ResponseWrapper<F> delete(
+    protected <F> ResponseWrapper<F> patch(
+            final RequestSpecification configuredSpec,
+            final String path,
+            final Class<F> responseClass
+    ) {
+        final Response response = with().spec(configuredSpec).patch(path);
+        logAllureResponseTime(response);
+        logFailedResponse(response);
+
+        return new ResponseWrapper<>(response, responseClass);
+    }
+
+    protected <F> ResponseWrapper<F> delete(
             final RequestSpecification configuredSpec,
             final String path,
             final Class<F> responseClass
@@ -92,21 +110,21 @@ public class BaseApiClient {
         return new ResponseWrapper<>(response, responseClass);
     }
 
-    /**
-     * Log response if status code higher than 300 or validation failed.
-     *
-     * @param response - {@link Response} response.
-     */
     private void logFailedResponse(final Response response) {
         response.then().log().ifError().log().ifValidationFails();
     }
 
     private Response logAllureResponseTime(final Response rawResponse) {
-        addAllureStepTextAttachment("Response time",
+        Allure.addAttachment("Response time",
                 Double.toString(rawResponse.getTimeIn(TimeUnit.MILLISECONDS) / LONG_TO_DOUBLE_DIVIDER)
         );
 
         return rawResponse;
+    }
+
+    @SneakyThrows
+    public static String objectToJsonString(final Object object) {
+        return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(object);
     }
 
 }

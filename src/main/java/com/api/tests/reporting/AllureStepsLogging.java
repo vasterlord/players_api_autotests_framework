@@ -3,8 +3,6 @@ package com.api.tests.reporting;
 import io.qameta.allure.Allure.StepContext;
 import io.qameta.allure.Allure.ThrowableContextRunnable;
 import io.qameta.allure.Allure.ThrowableRunnable;
-import io.qameta.allure.Allure.ThrowableRunnableVoid;
-import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.Parameter;
 import io.qameta.allure.model.Status;
@@ -29,20 +27,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Slf4j
 public final class AllureStepsLogging implements StepLifecycleListener {
 
-
     private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("[a-z]+([A-Z][a-z0-9]+)+");
 
     public static final int STEP_LOG_CHARS_LIMIT = 300;
-
-    public static void allureStep(
-            final String name,
-            final ThrowableRunnableVoid runnable
-    ) {
-        allureStep(name, () -> {
-            runnable.run();
-            return null;
-        });
-    }
 
     public static <T> T allureStep(
             final String name,
@@ -81,16 +68,20 @@ public final class AllureStepsLogging implements StepLifecycleListener {
         addAttachment(attachmentName, "text/plain", attachmentContent, ".txt");
     }
 
+
     @Override
     public void beforeStepStart(final StepResult stepResult) {
         if (isCamelCaseString(stepResult.getName())) {
             final String allureStep = convertCamelCaseToSentenceCase(stepResult.getName());
             final String stepParameters = stepResult.getParameters().stream()
-                    .map(Parameter::getValue).collect(Collectors.joining(", "));
+                    .map(Parameter::getValue)
+                    .filter(param -> escapeJava(param).chars().count() <= STEP_LOG_CHARS_LIMIT)
+                    .collect(Collectors.joining(", "));
+
             final String resultAllureStepLog =
-                    isNotBlank(stepParameters)
-                            && escapeJava(stepParameters).chars().count() <= STEP_LOG_CHARS_LIMIT
-                            ? (String.join((": "), allureStep, stepParameters)) : allureStep;
+                    isNotBlank(stepParameters) ? String.join(": ", allureStep, stepParameters)
+                            : allureStep;
+
             log.info(resultAllureStepLog);
             stepResult.setName(resultAllureStepLog);
         } else {
