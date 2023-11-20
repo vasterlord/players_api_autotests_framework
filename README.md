@@ -37,5 +37,14 @@ allure --version
 
 Tests run command example:
 ```
-mvn clean test -DbaseUrl=<base.url> -DthreadsCount=<threads.count>
+mvn clean test
 ```
+In addition, for running tests is possible to customize specific parameters:
+* base.api.url. Default value - http://3.68.165.45/
+* threads.count. Default value - 3
+* requests.api.log.level. Valid values: ALL,HEADERS, COOKIES, BODY, STATUS, PARAMS, METHOD, URI. Default value - ALL.
+```
+mvn clean test -Dbase.api.url=<base.api.url> -Dthreads.count=<threads.count> -Drequests.api.log.level=<requests.api.log.level>
+```
+
+Tests which cover defects are marked with Allure annotations *@Tag("Defect - description")*

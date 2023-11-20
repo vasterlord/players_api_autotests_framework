@@ -1,5 +1,6 @@
 package com.api.tests;
 
+import com.api.tests.clients.PlayersApiClient;
 import com.api.tests.clients.ResponseWrapper;
 import com.api.tests.dto.CreateUpdatePlayerRequestDto;
 import com.api.tests.dto.PlayerDataResponseDto;
@@ -8,7 +9,11 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.testng.Tag;
 import org.assertj.core.api.SoftAssertions;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.apache.hc.core5.http.HttpStatus.SC_SUCCESS;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
@@ -16,6 +21,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Feature("/player/create/{editor}")
 public class CreatePlayerTests extends BasePlayersApiTest {
+
+    private PlayersApiClient playersApiClient;
+
+    private CopyOnWriteArrayList<Integer> createdPlayersList;
+
+    @BeforeClass
+    public void setUp() {
+        playersApiClient = new PlayersApiClient();
+        createdPlayersList = new CopyOnWriteArrayList<>();
+    }
+
+    @AfterClass
+    public void tearDown() {
+        cleanUpCreatedPlayers(createdPlayersList);
+    }
 
     @Test
     @Description("Verify that player is created successfully")

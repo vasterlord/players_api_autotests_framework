@@ -1,5 +1,6 @@
 package com.api.tests;
 
+import com.api.tests.clients.PlayersApiClient;
 import com.api.tests.clients.ResponseWrapper;
 import com.api.tests.dto.CreateUpdatePlayerRequestDto;
 import com.api.tests.dto.PlayerDataResponseDto;
@@ -8,7 +9,11 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.testng.Tag;
 import io.qameta.allure.testng.Tags;
 import org.assertj.core.api.SoftAssertions;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.apache.hc.core5.http.HttpStatus.SC_CONFLICT;
 import static org.apache.hc.core5.http.HttpStatus.SC_SUCCESS;
@@ -16,6 +21,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Feature("/player/update/{editor}/{id}")
 public class UpdatePlayerTests extends BasePlayersApiTest {
+
+    private PlayersApiClient playersApiClient;
+
+    private CopyOnWriteArrayList<Integer> createdPlayersList;
+
+    @BeforeClass
+    public void setUp() {
+        playersApiClient = new PlayersApiClient();
+        createdPlayersList = new CopyOnWriteArrayList<>();
+    }
+
+    @AfterClass
+    public void tearDown() {
+        cleanUpCreatedPlayers(createdPlayersList);
+    }
 
     @Test
     @Tag("Possible defect, because regarding Swagger update request contains password data, whereas response is not")
@@ -55,12 +75,13 @@ public class UpdatePlayerTests extends BasePlayersApiTest {
                         CreateUpdatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto())
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
+        createdPlayersList.add(firstPlayerDto.getId());
         final PlayerDataResponseDto playerDtoToUpdate = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
                         CreateUpdatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto())
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
-        createdPlayersList.add(firstPlayerDto.getId());
+        createdPlayersList.add(playerDtoToUpdate.getId());
 
         final CreateUpdatePlayerRequestDto updatePlayerLoginRequestDto = CreateUpdatePlayerRequestDto
                 .buildValidRandomCreatePlayerRequestDto().setLogin(firstPlayerDto.getLogin());

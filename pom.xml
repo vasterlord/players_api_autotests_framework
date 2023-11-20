@@ -16,9 +16,11 @@
         <jackson.version>2.14.0</jackson.version>
         <lombok.version>1.18.28</lombok.version>
         <slf4j.version>2.0.9</slf4j.version>
-
         <allure.version>2.24.0</allure.version>
         <aspectj.version>1.9.20.1</aspectj.version>
+        <base.api.url>http://3.68.165.45/</base.api.url>
+        <requests.api.log.level>ALL</requests.api.log.level>
+        <threads.count>4</threads.count>
     </properties>
 
     <dependencyManagement>
@@ -164,8 +166,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.2</version>
                 <configuration>
-                    <parallel>all</parallel>
-                    <threadCount>3</threadCount>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/players-api-tests-suite.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                     <testFailureIgnore>false</testFailureIgnore>
                     <argLine>
                         -Dfile.encoding=${project.build.sourceEncoding}
@@ -173,6 +176,9 @@
                     </argLine>
                     <systemPropertyVariables>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                        <base.api.url>${base.api.url}</base.api.url>
+                        <requests.api.log.level>${requests.api.log.level}</requests.api.log.level>
+                        <threads.count>${threads.count}</threads.count>
                     </systemPropertyVariables>
                 </configuration>
                 <dependencies>

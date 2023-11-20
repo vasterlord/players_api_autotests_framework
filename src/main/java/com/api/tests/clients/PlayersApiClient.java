@@ -3,15 +3,18 @@ package com.api.tests.clients;
 import com.api.tests.dto.CreateUpdatePlayerRequestDto;
 import com.api.tests.dto.PlayerDataResponseDto;
 import io.qameta.allure.Step;
-import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import org.json.JSONObject;
 
 public final class PlayersApiClient extends BaseApiClient {
 
+    private static final String DEFAULT_BASE_PLAYERS_API_URL = System.getProperty("base.api.url");
+
+    private static final String DEFAULT_API_REQUESTS_LOG_LEVEL = System.getProperty("requests.api.log.level");
+
     public PlayersApiClient() {
-        super(LogDetail.ALL, BaseApiClientParameters.builder()
-                .baseUri("http://3.68.165.45")
+        super(DEFAULT_API_REQUESTS_LOG_LEVEL, BaseApiClientParameters.builder()
+                .baseUri(DEFAULT_BASE_PLAYERS_API_URL)
                 .basePath("/player")
                 .contentType(ContentType.JSON)
                 .build());

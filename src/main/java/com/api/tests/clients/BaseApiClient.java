@@ -7,14 +7,16 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.with;
@@ -22,18 +24,36 @@ import static io.restassured.config.LogConfig.logConfig;
 import static io.restassured.config.ObjectMapperConfig.objectMapperConfig;
 import static io.restassured.config.RestAssuredConfig.config;
 
+@Slf4j
 public class BaseApiClient {
 
     private static final double LONG_TO_DOUBLE_DIVIDER = 1000.0;
 
     private final RequestSpecification baseRequestSpec;
 
-    protected BaseApiClient(LogDetail logDetail, BaseApiClientParameters baseApiClientParameters) {
+    protected BaseApiClient(String logDetailLevel, BaseApiClientParameters baseApiClientParameters) {
+        final LogDetail logDetail = getLogDetail(logDetailLevel);
         config().logConfig(logConfig().enableLoggingOfRequestAndResponseIfValidationFails())
                 .objectMapperConfig(objectMapperConfig()
                         .jackson2ObjectMapperFactory((cls, charset) -> new ObjectMapper()));
         RestAssured.defaultParser = Parser.JSON;
         baseRequestSpec = setupBaseRequestSpec(logDetail, baseApiClientParameters);
+    }
+
+    private static LogDetail getLogDetail(final String logDetailLevel) {
+        final Optional<LogDetail> logDetailOptional = Arrays.stream(LogDetail.values())
+                .filter(logDetailValue -> logDetailValue.name()
+                .equals(logDetailLevel.toUpperCase())).findFirst();
+        final LogDetail logDetail;
+        if (logDetailOptional.isPresent()) {
+            logDetail = logDetailOptional.get();
+        } else {
+            logDetail = LogDetail.ALL;
+            log.warn("Provided api requests log detail level '{}' is not valid. Please check .README.md",
+                    logDetailLevel);
+            log.info("API requests log detail level was set to default value: {}", LogDetail.ALL.name());
+        }
+        return logDetail;
     }
 
     private RequestSpecification setupBaseRequestSpec(final LogDetail logDetail,

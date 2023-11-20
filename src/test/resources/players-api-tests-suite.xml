@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Player Controller Tests" parallel="classes" thread-count="1">
+    <listeners>
+        <listener class-name="com.api.tests.listeners.ThreadCountChangerListener"/>
+    </listeners>
+    <test name="Player API CRUD tests">
+        <classes>
+            <class name="com.api.tests.CreatePlayerTests"/>
+            <class name="com.api.tests.GetPlayerTests"/>
+            <class name="com.api.tests.UpdatePlayerTests"/>
+            <class name="com.api.tests.DeletePlayerTests"/>
+        </classes>
+    </test>
+</suite>

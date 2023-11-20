@@ -12,7 +12,7 @@ import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreatePlayerDataProvider {
 
-    @DataProvider(name = "creating_player_with_gander_range_data_provider", parallel = true)
+    @DataProvider(name = "creating_player_with_gander_range_data_provider")
     public static Object[][] getPlayerRequestGendersDataProvider() {
         return new Object[][]{
                 {Gender.MALE.getGenderName(), SC_SUCCESS},
@@ -21,7 +21,7 @@ public final class CreatePlayerDataProvider {
         };
     }
 
-    @DataProvider(name = "creating_player_with_passwords_range_data_provider", parallel = true)
+    @DataProvider(name = "creating_player_with_passwords_range_data_provider")
     public static Object[][] getPlayerRequestPasswordsDataProvider() {
         final var faker = Faker.instance();
         return new Object[][]{
