@@ -1,8 +1,8 @@
 package com.api.tests;
 
 import com.api.tests.clients.ResponseWrapper;
-import com.api.tests.dto.CreatePlayerRequestDto;
-import com.api.tests.dto.CreatePlayerResponseDto;
+import com.api.tests.dto.CreateUpdatePlayerRequestDto;
+import com.api.tests.dto.PlayerDataResponseDto;
 import com.api.tests.dto.Role;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -15,14 +15,14 @@ import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Feature("/player/create/{editor}")
-public class CreatePlayerTest extends BasePlayersApiTest {
+public class CreatePlayerTests extends BasePlayersApiTest {
 
     @Test
     @Description("Verify that player is created successfully")
     public void verifySuccessfulPlayerCreating() {
-        final CreatePlayerResponseDto createPlayerResponseDto = playersApiClient
+        final PlayerDataResponseDto createPlayerResponseDto = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
-                        CreatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto())
+                        CreateUpdatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto())
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
         assertThat(createPlayerResponseDto.getId())
@@ -34,34 +34,34 @@ public class CreatePlayerTest extends BasePlayersApiTest {
     }
 
     @Test
-    @Tag("Defect")
+    @Tag("Defect: at the response we have nulls for age, gender, password, role, screenName values")
     @Description("Verify that created players has all valid fields with from request data")
     public void verifyPlayerIsCreatedWithValidFieldsDataResponse() {
-        final CreatePlayerRequestDto createPlayerRequestDto = CreatePlayerRequestDto
+        final CreateUpdatePlayerRequestDto createPlayerRequestDto = CreateUpdatePlayerRequestDto
                 .buildValidRandomCreatePlayerRequestDto();
-        final CreatePlayerResponseDto actualCreatePlayerResponseDto = playersApiClient
+        final PlayerDataResponseDto actualCreatePlayerResponseDto = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
                         createPlayerRequestDto)
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
         createdPlayersList.add(actualCreatePlayerResponseDto.getId());
 
-        final CreatePlayerResponseDto expectedCreatePlayerResponseDto = CreatePlayerResponseDto
-                .buildExpectedCreatePlayerResponseDto(actualCreatePlayerResponseDto.getId(), createPlayerRequestDto);
+        final PlayerDataResponseDto expectedCreatePlayerResponseDto = PlayerDataResponseDto
+                .buildExpectedPlayerDataResponseDto(actualCreatePlayerResponseDto.getId(), createPlayerRequestDto);
         assertThat(actualCreatePlayerResponseDto)
                 .as("Created player should have field with valid values")
                 .usingRecursiveComparison()
                 .isEqualTo(expectedCreatePlayerResponseDto);
     }
 
-    @Tag("Defect - player can be created with invalid gender")
+    @Tag("Defect: the player can be created with invalid gender value")
     @Test(dataProvider = "creating_player_with_gander_range_data_provider",
             dataProviderClass = CreatePlayerDataProvider.class)
     @Description("Verify that player can be created within the specified genders range")
     public void verifyPlayerCreationWithinGendersRange(String gender, int expectedStatusCode) {
-        final CreatePlayerRequestDto createPlayerRequestDto = CreatePlayerRequestDto
+        final CreateUpdatePlayerRequestDto createPlayerRequestDto = CreateUpdatePlayerRequestDto
                 .buildValidRandomCreatePlayerRequestDto().setGender(gender);
-        final ResponseWrapper<CreatePlayerResponseDto> actualCreatePlayerResponse = playersApiClient
+        final ResponseWrapper<PlayerDataResponseDto> actualCreatePlayerResponse = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR, createPlayerRequestDto);
         final int actualStatusCode = actualCreatePlayerResponse.getStatusCode();
         final SoftAssertions softAssertions = new SoftAssertions();
@@ -76,14 +76,14 @@ public class CreatePlayerTest extends BasePlayersApiTest {
         softAssertions.assertAll();
     }
 
-    @Tag("Defect - player can be created with disallowed passwords range")
+    @Tag("Defect: the player can be created with disallowed passwords range")
     @Test(dataProvider = "creating_player_with_passwords_range_data_provider",
             dataProviderClass = CreatePlayerDataProvider.class)
     @Description("Verify that player can be created within the specified genders range")
     public void verifyPlayerCreationWithinPasswordsRange(String password, int expectedStatusCode) {
-        final CreatePlayerRequestDto createPlayerRequestDto = CreatePlayerRequestDto
+        final CreateUpdatePlayerRequestDto createPlayerRequestDto = CreateUpdatePlayerRequestDto
                 .buildValidRandomCreatePlayerRequestDto().setPassword(password);
-        final ResponseWrapper<CreatePlayerResponseDto> actualCreatePlayerResponse = playersApiClient
+        final ResponseWrapper<PlayerDataResponseDto> actualCreatePlayerResponse = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR, createPlayerRequestDto);
         final int actualStatusCode = actualCreatePlayerResponse.getStatusCode();
         final SoftAssertions softAssertions = new SoftAssertions();
@@ -103,16 +103,16 @@ public class CreatePlayerTest extends BasePlayersApiTest {
     @Tag("Negative")
     @Description("Verify that player cannot be created by user editor")
     public void verifyPlayerCreationByUserEditor() {
-        final CreatePlayerResponseDto createdUserPlayer = playersApiClient
+        final PlayerDataResponseDto createdUserPlayer = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
-                        CreatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto()
+                        CreateUpdatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto()
                                 .setRole(Role.USER.getRoleName()))
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
         createdPlayersList.add(createdUserPlayer.getId());
 
-        final ResponseWrapper<CreatePlayerResponseDto> creatingPlayerByUserResponse = playersApiClient
-                .runCreatePlayerRequest(createdUserPlayer.getLogin(), CreatePlayerRequestDto
+        final ResponseWrapper<PlayerDataResponseDto> creatingPlayerByUserResponse = playersApiClient
+                .runCreatePlayerRequest(createdUserPlayer.getLogin(), CreateUpdatePlayerRequestDto
                         .buildValidRandomCreatePlayerRequestDto());
         if (creatingPlayerByUserResponse.getStatusCode() == SC_SUCCESS) {
             createdPlayersList.add(creatingPlayerByUserResponse.readEntity().getId());

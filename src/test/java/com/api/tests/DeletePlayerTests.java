@@ -1,8 +1,8 @@
 package com.api.tests;
 
 import com.api.tests.clients.ResponseWrapper;
-import com.api.tests.dto.CreatePlayerRequestDto;
-import com.api.tests.dto.CreatePlayerResponseDto;
+import com.api.tests.dto.CreateUpdatePlayerRequestDto;
+import com.api.tests.dto.PlayerDataResponseDto;
 import com.api.tests.dto.Role;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -14,20 +14,20 @@ import static org.apache.hc.core5.http.HttpStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Feature("/player/delete/{editor}")
-public class DeletePlayerTest extends BasePlayersApiTest {
+public class DeletePlayerTests extends BasePlayersApiTest {
 
     @Test
     @Description("Verify that admin editor can delete player")
     public void verifyAdminDeletesPlayerSuccessfully() {
-        final CreatePlayerResponseDto adminPlayerResponseDto = playersApiClient
+        final PlayerDataResponseDto adminPlayerResponseDto = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
-                        CreatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto(Role.ADMIN.getRoleName()))
+                        CreateUpdatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto(Role.ADMIN.getRoleName()))
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
         createdPlayersList.add(adminPlayerResponseDto.getId());
-        final CreatePlayerResponseDto userPlayerResponseDto = playersApiClient
+        final PlayerDataResponseDto userPlayerResponseDto = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
-                        CreatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto(Role.USER.getRoleName()))
+                        CreateUpdatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto(Role.USER.getRoleName()))
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
 
@@ -42,18 +42,21 @@ public class DeletePlayerTest extends BasePlayersApiTest {
     }
 
     @Test
-    @Tags({@Tag("Negative"), @Tag("Defect")})
+    @Tags({
+            @Tag("Negative"),
+            @Tag("Defect: user editor can delete admin user, whereas user should have delete opportunities")
+    })
     @Description("Verify that user editor cannot delete admin player")
     public void verifyUserCannotDeleteAdmin() {
-        final CreatePlayerResponseDto userPlayerResponseDto = playersApiClient
+        final PlayerDataResponseDto userPlayerResponseDto = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
-                        CreatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto(Role.USER.getRoleName()))
+                        CreateUpdatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto(Role.USER.getRoleName()))
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
         createdPlayersList.add(userPlayerResponseDto.getId());
-        final CreatePlayerResponseDto adminPlayerResponseDto = playersApiClient
+        final PlayerDataResponseDto adminPlayerResponseDto = playersApiClient
                 .runCreatePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
-                        CreatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto(Role.ADMIN.getRoleName()))
+                        CreateUpdatePlayerRequestDto.buildValidRandomCreatePlayerRequestDto(Role.ADMIN.getRoleName()))
                 .expectingStatusCode(SC_SUCCESS)
                 .readEntity();
 

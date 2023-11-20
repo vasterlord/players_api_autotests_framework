@@ -19,8 +19,8 @@ public class BasePlayersApiTest {
     @Step
     @AfterClass
     public void cleanUpCreatedPlayers() {
-        createdPlayersList.forEach(playerId -> playersApiClient.runDeletePlayerRequest(DEFAULT_SUPERVISOR_EDITOR, playerId)
-                .expectingStatusCode(SC_NO_CONTENT));
+        createdPlayersList.forEach(playerId -> playersApiClient.runDeletePlayerRequest(DEFAULT_SUPERVISOR_EDITOR,
+                        playerId).expectingStatusCode(SC_NO_CONTENT));
     }
 
 }

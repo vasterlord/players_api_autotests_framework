@@ -1,7 +1,7 @@
 package com.api.tests.clients;
 
-import com.api.tests.dto.CreatePlayerRequestDto;
-import com.api.tests.dto.CreatePlayerResponseDto;
+import com.api.tests.dto.CreateUpdatePlayerRequestDto;
+import com.api.tests.dto.PlayerDataResponseDto;
 import io.qameta.allure.Step;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -22,26 +22,26 @@ public final class PlayersApiClient extends BaseApiClient {
     }
 
     @Step
-    public ResponseWrapper<CreatePlayerResponseDto> runCreatePlayerRequest(
+    public ResponseWrapper<PlayerDataResponseDto> runCreatePlayerRequest(
             final String editor,
-            final CreatePlayerRequestDto createPlayerRequestDto) {
+            final CreateUpdatePlayerRequestDto createPlayerRequestDto) {
         return get(getBaseRequestSpec().queryParams(createPlayerRequestDto.buildPlayerRequestParamsMap()),
-                "/create/" + editor, CreatePlayerResponseDto.class);
+                "/create/" + editor, PlayerDataResponseDto.class);
     }
 
     @Step
-    public ResponseWrapper<CreatePlayerResponseDto> runGetPlayerByIdRequest(final int playerId) {
+    public ResponseWrapper<PlayerDataResponseDto> runGetPlayerByIdRequest(final int playerId) {
         return post(getBaseRequestSpec().body(buildPlayerIdJsonRequestBody(playerId)), "/get",
-                CreatePlayerResponseDto.class);
+                PlayerDataResponseDto.class);
     }
 
     @Step
-    public ResponseWrapper<CreatePlayerResponseDto> runUpdatePlayerRequest(
+    public ResponseWrapper<PlayerDataResponseDto> runUpdatePlayerRequest(
             final String editor,
-            final String playerId,
-            final CreatePlayerRequestDto createPlayerRequestDto) {
+            final int playerId,
+            final CreateUpdatePlayerRequestDto createPlayerRequestDto) {
         return patch(getBaseRequestSpec().body(createPlayerRequestDto),
-                String.format("/update/%s/%s", editor, playerId), CreatePlayerResponseDto.class);
+                String.format("/update/%s/%s", editor, playerId), PlayerDataResponseDto.class);
     }
 
     @Step

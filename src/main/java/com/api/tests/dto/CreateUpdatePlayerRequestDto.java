@@ -1,11 +1,9 @@
 package com.api.tests.dto;
 
 import com.github.javafaker.Faker;
-import io.restassured.RestAssured;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.experimental.Accessors;
 
 import java.util.HashMap;
@@ -16,11 +14,14 @@ import java.util.Optional;
 import static com.api.tests.utils.CollectionUtils.getRandomEnum;
 import static com.api.tests.utils.CollectionUtils.getRandomListElement;
 
+/*
+    CreateUpdatePlayerRequestDto.class can be used for create and update player endpoints.
+ */
 @Data
 @Builder
 @EqualsAndHashCode
 @Accessors(chain = true)
-public final class CreatePlayerRequestDto {
+public final class CreateUpdatePlayerRequestDto {
 
     private Integer age;
 
@@ -49,10 +50,10 @@ public final class CreatePlayerRequestDto {
         return createPlayerRequestParamsMap;
     }
 
-    public static CreatePlayerRequestDto buildValidRandomCreatePlayerRequestDto() {
+    public static CreateUpdatePlayerRequestDto buildValidRandomCreatePlayerRequestDto() {
         final var faker = Faker.instance();
         final var playerRole = getRandomListElement(List.of(Role.USER, Role.ADMIN)).getRoleName();
-        return CreatePlayerRequestDto.builder()
+        return CreateUpdatePlayerRequestDto.builder()
                 .age(faker.number().numberBetween(16, 60))
                 .gender(getRandomEnum(Gender.class).getGenderName())
                 .role(getRandomListElement(List.of(Role.USER, Role.ADMIN)).getRoleName())
@@ -62,9 +63,9 @@ public final class CreatePlayerRequestDto {
                 .build();
     }
 
-    public static CreatePlayerRequestDto buildValidRandomCreatePlayerRequestDto(final String playerRole) {
+    public static CreateUpdatePlayerRequestDto buildValidRandomCreatePlayerRequestDto(final String playerRole) {
         final var faker = Faker.instance();
-        return CreatePlayerRequestDto.builder()
+        return CreateUpdatePlayerRequestDto.builder()
                 .age(faker.number().numberBetween(16, 60))
                 .gender(getRandomEnum(Gender.class).getGenderName())
                 .role(playerRole)

@@ -7,11 +7,14 @@ import lombok.extern.jackson.Jacksonized;
 
 import static com.api.tests.clients.BaseApiClient.objectToJsonString;
 
+/*
+    PlayerDataResponseDto.class can be used for create, get by id, update player endpoints.
+ */
 @Getter
 @Builder
 @Jacksonized
 @EqualsAndHashCode
-public final class CreatePlayerResponseDto {
+public final class PlayerDataResponseDto {
 
     private final int id;
 
@@ -27,10 +30,10 @@ public final class CreatePlayerResponseDto {
 
     private final String role;
 
-    public static CreatePlayerResponseDto buildExpectedCreatePlayerResponseDto(
+    public static PlayerDataResponseDto buildExpectedPlayerDataResponseDto(
             final int id,
-            final CreatePlayerRequestDto createPlayerRequestDto) {
-        return CreatePlayerResponseDto.builder()
+            final CreateUpdatePlayerRequestDto createPlayerRequestDto) {
+        return PlayerDataResponseDto.builder()
                 .id(id)
                 .login(createPlayerRequestDto.getLogin())
                 .password(createPlayerRequestDto.getPassword())

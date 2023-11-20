@@ -4,10 +4,12 @@ package com.api.tests.clients;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Allure;
 import io.qameta.allure.restassured.AllureRestAssured;
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
@@ -30,6 +32,7 @@ public class BaseApiClient {
         config().logConfig(logConfig().enableLoggingOfRequestAndResponseIfValidationFails())
                 .objectMapperConfig(objectMapperConfig()
                         .jackson2ObjectMapperFactory((cls, charset) -> new ObjectMapper()));
+        RestAssured.defaultParser = Parser.JSON;
         baseRequestSpec = setupBaseRequestSpec(logDetail, baseApiClientParameters);
     }
 
