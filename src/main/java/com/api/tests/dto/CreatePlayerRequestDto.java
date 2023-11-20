@@ -62,6 +62,18 @@ public final class CreatePlayerRequestDto {
                 .build();
     }
 
+    public static CreatePlayerRequestDto buildValidRandomCreatePlayerRequestDto(final String playerRole) {
+        final var faker = Faker.instance();
+        return CreatePlayerRequestDto.builder()
+                .age(faker.number().numberBetween(16, 60))
+                .gender(getRandomEnum(Gender.class).getGenderName())
+                .role(playerRole)
+                .login(faker.name().firstName() + playerRole.toUpperCase())
+                .password(faker.internet().password(7, 15, true))
+                .screenName(faker.name().lastName() + "_" + playerRole.toUpperCase())
+                .build();
+    }
+
     @Override
     public String toString() {
         return buildPlayerRequestParamsMap().toString();
