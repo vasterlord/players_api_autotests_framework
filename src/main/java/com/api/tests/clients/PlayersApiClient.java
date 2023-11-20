@@ -17,12 +17,12 @@ public final class PlayersApiClient extends BaseApiClient {
                 .build());
     }
 
-    private static String buildPlayerIdJsonRequestBody(final String playerId) {
+    private static String buildPlayerIdJsonRequestBody(final int playerId) {
         return new JSONObject().put("playerId", playerId).toString();
     }
 
     @Step
-    public ResponseWrapper<CreatePlayerResponseDto> createPlayerRequest(
+    public ResponseWrapper<CreatePlayerResponseDto> runCreatePlayerRequest(
             final String editor,
             final CreatePlayerRequestDto createPlayerRequestDto) {
         return get(getBaseRequestSpec().queryParams(createPlayerRequestDto.buildPlayerRequestParamsMap()),
@@ -30,13 +30,13 @@ public final class PlayersApiClient extends BaseApiClient {
     }
 
     @Step
-    public ResponseWrapper<CreatePlayerResponseDto> getPlayerByIdRequest(final String playerId) {
+    public ResponseWrapper<CreatePlayerResponseDto> runGetPlayerByIdRequest(final int playerId) {
         return post(getBaseRequestSpec().body(buildPlayerIdJsonRequestBody(playerId)), "/get",
                 CreatePlayerResponseDto.class);
     }
 
     @Step
-    public ResponseWrapper<CreatePlayerResponseDto> executeUpdatePlayerRequest(
+    public ResponseWrapper<CreatePlayerResponseDto> runUpdatePlayerRequest(
             final String editor,
             final String playerId,
             final CreatePlayerRequestDto createPlayerRequestDto) {
@@ -45,9 +45,9 @@ public final class PlayersApiClient extends BaseApiClient {
     }
 
     @Step
-    public ResponseWrapper<String> executeDeletePlayerRequest(
+    public ResponseWrapper<String> runDeletePlayerRequest(
             final String editor,
-            final String playerId) {
+            final int playerId) {
         return delete(getBaseRequestSpec().body(buildPlayerIdJsonRequestBody(playerId)),
                 "/delete/" + editor, String.class);
     }

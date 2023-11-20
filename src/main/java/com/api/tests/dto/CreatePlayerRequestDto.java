@@ -3,7 +3,10 @@ package com.api.tests.dto;
 import com.github.javafaker.Faker;
 import io.restassured.RestAssured;
 import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,21 +16,23 @@ import java.util.Optional;
 import static com.api.tests.utils.CollectionUtils.getRandomEnum;
 import static com.api.tests.utils.CollectionUtils.getRandomListElement;
 
-@Getter
+@Data
 @Builder
+@EqualsAndHashCode
+@Accessors(chain = true)
 public final class CreatePlayerRequestDto {
 
-    private final int age;
+    private Integer age;
 
-    private final String gender;
+    private String gender;
 
-    private final String login;
+    private String login;
 
-    private final String password;
+    private String password;
 
-    private final String role;
+    private String role;
 
-    private final String screenName;
+    private String screenName;
 
     public Map<String, Object> buildPlayerRequestParamsMap() {
         final Map<String, Object> createPlayerRequestParamsMap = new HashMap<>();

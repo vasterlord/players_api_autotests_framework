@@ -6,6 +6,8 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
@@ -33,7 +35,9 @@ public class BaseApiClient {
 
     private RequestSpecification setupBaseRequestSpec(final LogDetail logDetail,
                                                       final BaseApiClientParameters baseApiClientParameters) {
-        return new RequestSpecBuilder().addFilters(List.of(new AllureRestAssured())).log(logDetail)
+        return new RequestSpecBuilder()
+                .addFilters(List.of(new AllureRestAssured(), new ResponseLoggingFilter()))
+                .log(logDetail)
                 .setBaseUri(baseApiClientParameters.getBaseUri())
                 .setBasePath(baseApiClientParameters.getBasePath())
                 .setContentType(baseApiClientParameters.getContentType())
